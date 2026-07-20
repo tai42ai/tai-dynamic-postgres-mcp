@@ -1,4 +1,4 @@
-# tai-dynamic-postgres-mcp
+# tai42-dynamic-postgres-mcp
 
 Schema-driven generator for **safe, scoped PostgreSQL DML tools** in
 [FastMCP](https://github.com/jlowin/fastmcp) agent systems.

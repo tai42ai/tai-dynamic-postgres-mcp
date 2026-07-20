@@ -4,9 +4,9 @@ from psycopg import sql
 from psycopg.types.json import Json
 from pydantic import BaseModel
 
-from tai_dynamic_postgres_mcp.database.connection import get_connection_pool
-from tai_dynamic_postgres_mcp.gen.filters.builder import build_where_clause, resolver_from_columns
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.database.connection import get_connection_pool
+from tai42_dynamic_postgres_mcp.gen.filters.builder import build_where_clause, resolver_from_columns
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
 
 
 async def update_tmpl(

@@ -1,16 +1,16 @@
 from typing import Optional
 
-from tai_dynamic_postgres_mcp.gen.builders.base_gen import Chunk, TableGen
-from tai_dynamic_postgres_mcp.gen.schema.introspect import TableInfo
+from tai42_dynamic_postgres_mcp.gen.builders.base_gen import Chunk, TableGen
+from tai42_dynamic_postgres_mcp.gen.schema.introspect import TableInfo
 
 _FUNC_PREFIX = "delete"
 
 _IMPORTS = """# This file is auto-generated. Do not edit manually.
 
 from typing import Optional
-from tai_dynamic_postgres_mcp.core.app import mcp_app
-from tai_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.core.app import mcp_app
+from tai42_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
 
 """
 

@@ -1,4 +1,4 @@
-site_name: tai-dynamic-postgres-mcp
+site_name: tai42-dynamic-postgres-mcp
 site_description: Schema-driven generator for safe, scoped PostgreSQL DML tools in FastMCP agent systems.
 docs_dir: docs
 

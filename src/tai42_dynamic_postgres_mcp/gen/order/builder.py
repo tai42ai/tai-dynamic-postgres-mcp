@@ -2,9 +2,9 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from psycopg import sql
 
-from tai_dynamic_postgres_mcp.gen.filters.builder import ColumnResolver
-from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
-from tai_dynamic_postgres_mcp.gen.vector import KNN_OPS, vector_literal
+from tai42_dynamic_postgres_mcp.gen.filters.builder import ColumnResolver
+from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
+from tai42_dynamic_postgres_mcp.gen.vector import KNN_OPS, vector_literal
 
 # Sort directions, pre-built from literals (the model already constrains the
 # value to ASC/DESC).

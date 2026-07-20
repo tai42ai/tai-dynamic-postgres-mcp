@@ -2,10 +2,10 @@ from typing import Any, Dict, List, Optional, Tuple, Type
 
 from psycopg import sql
 
-from tai_dynamic_postgres_mcp.gen.filters.builder import resolver_from_column_map
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
-from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
-from tai_dynamic_postgres_mcp.gen.templates.common import run_select
+from tai42_dynamic_postgres_mcp.gen.filters.builder import resolver_from_column_map
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
+from tai42_dynamic_postgres_mcp.gen.templates.common import run_select
 
 # A select item as (identifier_parts, alias), e.g. (["public", "users", "id"], "public_users_id").
 SelectItem = Tuple[List[str], str]

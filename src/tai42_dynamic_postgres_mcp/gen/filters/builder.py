@@ -2,8 +2,8 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from psycopg import sql
 
-from tai_dynamic_postgres_mcp.gen.filters.models import FilterOp, LogicalFilter, WhereFilter
-from tai_dynamic_postgres_mcp.gen.vector import KNN_OPS, vector_literal
+from tai42_dynamic_postgres_mcp.gen.filters.models import FilterOp, LogicalFilter, WhereFilter
+from tai42_dynamic_postgres_mcp.gen.vector import KNN_OPS, vector_literal
 
 # Comparison operators that map directly to `<column> <op> %s`. Values are
 # pre-built from string literals so they are never assembled from runtime text.

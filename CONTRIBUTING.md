@@ -1,6 +1,6 @@
-# Contributing to tai-dynamic-postgres-mcp
+# Contributing to tai42-dynamic-postgres-mcp
 
-`tai-dynamic-postgres-mcp` generates **safe, scoped PostgreSQL DML tools** for
+`tai42-dynamic-postgres-mcp` generates **safe, scoped PostgreSQL DML tools** for
 FastMCP agent systems: it introspects a database schema and emits one typed MCP
 tool per DML operation per table. The rule that shapes everything: **the agent
 never sees raw SQL.** Identifiers come from a validated allowlist and are emitted

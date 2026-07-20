@@ -3,7 +3,7 @@ from typing import AbstractSet, Any, List, Optional, Sequence, Tuple, Union
 from psycopg import sql
 from psycopg.types.json import Json
 
-from tai_dynamic_postgres_mcp.database.connection import get_connection_pool
+from tai42_dynamic_postgres_mcp.database.connection import get_connection_pool
 
 
 async def insert_tmpl(

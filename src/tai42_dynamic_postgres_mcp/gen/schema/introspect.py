@@ -3,8 +3,8 @@ import re
 from dataclasses import dataclass
 from typing import Dict, List, NamedTuple, Set, Tuple
 
-from tai_dynamic_postgres_mcp.database.connection import cursor
-from tai_dynamic_postgres_mcp.gen.schema.codegen import is_json_type, sql_type_to_python_type
+from tai42_dynamic_postgres_mcp.database.connection import cursor
+from tai42_dynamic_postgres_mcp.gen.schema.codegen import is_json_type, sql_type_to_python_type
 
 
 class ColumnInfo(NamedTuple):

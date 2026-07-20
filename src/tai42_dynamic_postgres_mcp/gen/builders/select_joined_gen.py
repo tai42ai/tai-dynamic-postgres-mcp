@@ -1,8 +1,8 @@
 from typing import Dict, Iterable, List, Optional, Tuple
 
-from tai_dynamic_postgres_mcp.gen.builders.base_gen import BaseGen, Chunk
-from tai_dynamic_postgres_mcp.gen.schema.codegen import sql_columns_to_pydantic_model
-from tai_dynamic_postgres_mcp.gen.schema.introspect import ForeignKey, TableInfo
+from tai42_dynamic_postgres_mcp.gen.builders.base_gen import BaseGen, Chunk
+from tai42_dynamic_postgres_mcp.gen.schema.codegen import sql_columns_to_pydantic_model
+from tai42_dynamic_postgres_mcp.gen.schema.introspect import ForeignKey, TableInfo
 
 _FUNC_PREFIX = "select_joined"
 
@@ -19,10 +19,10 @@ import uuid
 from decimal import Decimal
 from typing import Any, Optional, List, Union
 from pydantic import BaseModel
-from tai_dynamic_postgres_mcp.core.app import mcp_app
-from tai_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
-from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
+from tai42_dynamic_postgres_mcp.core.app import mcp_app
+from tai42_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
 
 """
 

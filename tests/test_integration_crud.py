@@ -11,7 +11,7 @@ from decimal import Decimal
 import pytest
 from pydantic import BaseModel
 
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
 
 pytestmark = pytest.mark.integration
 
@@ -32,14 +32,14 @@ def pg_dsn():
 
 @pytest.fixture
 async def db(pg_dsn, monkeypatch):
-    import tai_dynamic_postgres_mcp.database.connection as conn_mod
+    import tai42_dynamic_postgres_mcp.database.connection as conn_mod
 
     # Build the pool against the container by patching the conninfo builder, then
     # reset the process-wide singleton so it is rebuilt against the container.
     monkeypatch.setattr(conn_mod, "_build_conninfo", lambda: pg_dsn)
     await conn_mod.close_connection_pool()
 
-    from tai_dynamic_postgres_mcp.database.connection import close_connection_pool, cursor
+    from tai42_dynamic_postgres_mcp.database.connection import close_connection_pool, cursor
 
     async with cursor() as cur:
         await cur.execute("CREATE EXTENSION IF NOT EXISTS vector")
@@ -61,10 +61,10 @@ class ItemUpdate(BaseModel):
 
 
 async def test_insert_select_update_delete_roundtrip(db):
-    from tai_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     ids = await insert_tmpl("public.items", ["name", "qty"], [("a", 1), ("b", 2)], pk_columns=["id"])
     assert len(ids) == 2
@@ -91,9 +91,9 @@ async def test_insert_select_update_delete_roundtrip(db):
 
 
 async def test_select_limit_and_offset(db):
-    from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     await insert_tmpl("public.items", ["name", "qty"], [("a", 1), ("b", 2), ("c", 3)], pk_columns=["id"])
     ordered = [OrderByItem(field="qty", direction="ASC")]
@@ -102,22 +102,22 @@ async def test_select_limit_and_offset(db):
 
 
 async def test_unfiltered_update_blocked_by_default(db):
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     with pytest.raises(ValueError, match="without a WHERE filter"):
         await update_tmpl("public.items", COLS, ItemUpdate(qty=0))
 
 
 async def test_unfiltered_delete_blocked_by_default(db):
-    from tai_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
 
     with pytest.raises(ValueError, match="without a WHERE filter"):
         await delete_tmpl("public.items", COLS)
 
 
 async def test_unfiltered_delete_allowed_with_flag(db):
-    from tai_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     await insert_tmpl("public.items", ["name", "qty"], [("x", 1), ("y", 2)], pk_columns=["id"])
     deleted = await delete_tmpl("public.items", COLS, allow_unfiltered=True)
@@ -125,8 +125,8 @@ async def test_unfiltered_delete_allowed_with_flag(db):
 
 
 async def test_unfiltered_update_allowed_with_flag(db):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     await insert_tmpl("public.items", ["name", "qty"], [("a", 1), ("b", 2)], pk_columns=["id"])
     updated = await update_tmpl("public.items", COLS, ItemUpdate(qty=0), allow_unfiltered=True)
@@ -134,9 +134,9 @@ async def test_unfiltered_update_allowed_with_flag(db):
 
 
 async def test_insert_default_column_applies_db_default(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.defs")
@@ -153,9 +153,9 @@ async def test_insert_default_column_applies_db_default(db):
 
 
 async def test_insert_explicit_null_overrides_default(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.defs_null")
@@ -170,17 +170,17 @@ async def test_insert_explicit_null_overrides_default(db):
     await insert_tmpl(
         "public.defs_null", ["n"], [(None,)], default_columns=["n"], pk_columns=["id"], provided_fields=[set()]
     )
-    from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
+    from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
 
     rows = await select_tmpl("public.defs_null", ["id", "n"], order_by=[OrderByItem(field="id", direction="ASC")])
     assert [r["n"] for r in rows] == [None, 7]
 
 
 async def test_update_explicit_null_sets_null(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.upd_null")
@@ -203,9 +203,9 @@ async def test_update_explicit_null_sets_null(db):
 
 
 async def test_select_does_not_fetch_ignored_columns(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.secrets")
@@ -227,9 +227,9 @@ async def test_select_does_not_fetch_ignored_columns(db):
 
 
 async def test_native_types_roundtrip(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.natives")
@@ -280,8 +280,8 @@ async def test_native_types_roundtrip(db):
 
 
 async def test_insert_on_conflict_do_nothing(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.uniq")
@@ -295,8 +295,8 @@ async def test_insert_on_conflict_do_nothing(db):
 
 
 async def test_insert_composite_pk_returns_tuples(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.pair")
@@ -308,8 +308,8 @@ async def test_insert_composite_pk_returns_tuples(db):
 
 
 async def test_introspect_schema_structured(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.child")
@@ -339,8 +339,8 @@ async def test_introspect_schema_structured(db):
 
 
 async def test_enum_and_view_generation(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
 
     async with cursor() as cur:
         await cur.execute("DROP VIEW IF EXISTS public.mood_view")
@@ -364,8 +364,8 @@ async def test_enum_and_view_generation(db):
 
 
 async def test_select_joined_runtime(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.books")
@@ -398,8 +398,8 @@ async def test_select_joined_runtime(db):
 
 
 async def test_knn_filter_runtime(db):
-    from tai_dynamic_postgres_mcp.database.connection import cursor
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.database.connection import cursor
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     async with cursor() as cur:
         await cur.execute("DROP TABLE IF EXISTS public.vecs")
@@ -419,8 +419,8 @@ async def test_server_starts_and_serves_generated_tools(db):
     # (exercising the lifespan / pool open+close), then list and call a tool.
     from fastmcp import Client
 
-    from tai_dynamic_postgres_mcp.core.app import mcp_app
-    from tai_dynamic_postgres_mcp.gen.loader import load_dynamic_tools
+    from tai42_dynamic_postgres_mcp.core.app import mcp_app
+    from tai42_dynamic_postgres_mcp.gen.loader import load_dynamic_tools
 
     await load_dynamic_tools(overwrite=True, readonly=False)
 

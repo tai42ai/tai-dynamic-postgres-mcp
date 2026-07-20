@@ -2,15 +2,15 @@ import importlib
 import sys
 from typing import Dict, List, Optional, Set
 
-from tai_dynamic_postgres_mcp import tools
-from tai_dynamic_postgres_mcp.core import app as app_module
-from tai_dynamic_postgres_mcp.gen.builders.base_gen import OUTPUT_DIR, TOOLS_SUFFIX, BaseGen
-from tai_dynamic_postgres_mcp.gen.builders.delete_gen import DeleteGen
-from tai_dynamic_postgres_mcp.gen.builders.insert_gen import InsertGen
-from tai_dynamic_postgres_mcp.gen.builders.select_gen import SelectGen
-from tai_dynamic_postgres_mcp.gen.builders.select_joined_gen import SelectJoinedGen
-from tai_dynamic_postgres_mcp.gen.builders.update_gen import UpdateGen
-from tai_dynamic_postgres_mcp.gen.schema.introspect import TableInfo, introspect_schema
+from tai42_dynamic_postgres_mcp import tools
+from tai42_dynamic_postgres_mcp.core import app as app_module
+from tai42_dynamic_postgres_mcp.gen.builders.base_gen import OUTPUT_DIR, TOOLS_SUFFIX, BaseGen
+from tai42_dynamic_postgres_mcp.gen.builders.delete_gen import DeleteGen
+from tai42_dynamic_postgres_mcp.gen.builders.insert_gen import InsertGen
+from tai42_dynamic_postgres_mcp.gen.builders.select_gen import SelectGen
+from tai42_dynamic_postgres_mcp.gen.builders.select_joined_gen import SelectJoinedGen
+from tai42_dynamic_postgres_mcp.gen.builders.update_gen import UpdateGen
+from tai42_dynamic_postgres_mcp.gen.schema.introspect import TableInfo, introspect_schema
 
 # Tool names this loader has registered on the shared FastMCP app, keyed by the
 # short generated-module name (e.g. "insert_tools"). Tracked so a repeat call can

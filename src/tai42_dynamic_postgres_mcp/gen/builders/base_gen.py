@@ -2,8 +2,8 @@ from abc import ABC, abstractmethod
 from pathlib import Path
 from typing import Dict, Iterable, List, Optional, Tuple
 
-from tai_dynamic_postgres_mcp.config.settings import pg_settings
-from tai_dynamic_postgres_mcp.gen.schema.introspect import ColumnInfo, ForeignKey, TableInfo
+from tai42_dynamic_postgres_mcp.config.settings import pg_settings
+from tai42_dynamic_postgres_mcp.gen.schema.introspect import ColumnInfo, ForeignKey, TableInfo
 
 OUTPUT_DIR = Path(pg_settings.tools_dir)
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)

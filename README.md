@@ -1,4 +1,4 @@
-# tai-dynamic-postgres-mcp
+# tai42-dynamic-postgres-mcp
 
 [![CI](https://github.com/tai42ai/tai-dynamic-postgres-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/tai42ai/tai-dynamic-postgres-mcp/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
@@ -53,7 +53,7 @@ Highlights, in full detail in [SECURITY.md](SECURITY.md):
 Run directly from Git with `uvx`, or install into an environment:
 
 ```bash
-uvx --from git+https://github.com/tai42ai/tai-dynamic-postgres-mcp.git tai-postgres-mcp
+uvx --from git+https://github.com/tai42ai/tai-dynamic-postgres-mcp.git tai42-postgres-mcp
 # or
 pip install git+https://github.com/tai42ai/tai-dynamic-postgres-mcp.git
 ```
@@ -102,7 +102,7 @@ Connection and pooling are configured via environment variables:
       "args": [
         "--from",
         "git+https://github.com/tai42ai/tai-dynamic-postgres-mcp.git",
-        "tai-postgres-mcp",
+        "tai42-postgres-mcp",
         "--readonly"
       ],
       "env": {
@@ -167,9 +167,9 @@ Requires the `pgvector` extension enabled in the database.
 ## Docker
 
 ```bash
-docker build -t tai-postgres-mcp .
+docker build -t tai42-postgres-mcp .
 docker run --rm -e PG_HOST=... -e PG_DB=... -e PG_USER=... -e PG_PASSWORD=... \
-  tai-postgres-mcp tai-postgres-mcp --readonly
+  tai42-postgres-mcp tai42-postgres-mcp --readonly
 ```
 
 ## Development

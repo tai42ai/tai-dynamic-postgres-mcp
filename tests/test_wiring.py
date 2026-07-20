@@ -31,7 +31,7 @@ class _FakeIntrospectCursor:
 
 
 def _patch_introspect_cursor(monkeypatch, results):
-    import tai_dynamic_postgres_mcp.gen.schema.introspect as introspect_mod
+    import tai42_dynamic_postgres_mcp.gen.schema.introspect as introspect_mod
 
     def fake_cursor(*args, **kwargs):
         return _FakeIntrospectCursor(results)
@@ -40,7 +40,7 @@ def _patch_introspect_cursor(monkeypatch, results):
 
 
 async def test_introspect_assembles_tables_pk_enum_kinds(monkeypatch):
-    from tai_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
+    from tai42_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
 
     enum_rows = [("mood",)]
     column_rows = [
@@ -76,7 +76,7 @@ async def test_introspect_assembles_tables_pk_enum_kinds(monkeypatch):
 
 
 async def test_introspect_assembles_composite_fk(monkeypatch):
-    from tai_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
+    from tai42_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
 
     column_rows = [
         ("public", "t", "r", "a", "integer", True, False),
@@ -96,8 +96,8 @@ async def test_introspect_separates_same_named_fks_on_different_tables(monkeypat
     # A constraint name is unique only per table in PostgreSQL, so two different
     # tables can each own a FK named ``parent_fk``. They must reconstruct as two
     # independent single-column keys, not merge into one corrupted composite key.
-    from tai_dynamic_postgres_mcp.gen.builders.select_joined_gen import SelectJoinedGen
-    from tai_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
+    from tai42_dynamic_postgres_mcp.gen.builders.select_joined_gen import SelectJoinedGen
+    from tai42_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
 
     column_rows = [
         ("public", "parents", "r", "id", "integer", True, True),
@@ -130,7 +130,7 @@ async def test_introspect_separates_same_named_fks_on_different_tables(monkeypat
 
 
 async def test_introspect_rejects_unsafe_identifier(monkeypatch):
-    from tai_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
+    from tai42_dynamic_postgres_mcp.gen.schema.introspect import introspect_schema
 
     column_rows = [("public", "t", "r", "bad name", "integer", False, False)]
     _patch_introspect_cursor(monkeypatch, [[], column_rows, [], []])
@@ -185,7 +185,7 @@ class _FakePool:
 
 @pytest.fixture
 def fake_pool(monkeypatch):
-    import tai_dynamic_postgres_mcp.database.connection as conn_mod
+    import tai42_dynamic_postgres_mcp.database.connection as conn_mod
 
     monkeypatch.setattr(conn_mod, "AsyncConnectionPool", _FakePool)
     monkeypatch.setattr(conn_mod, "_pool", None)
@@ -194,7 +194,7 @@ def fake_pool(monkeypatch):
 
 
 def test_build_conninfo_includes_statement_timeout():
-    from tai_dynamic_postgres_mcp.database.connection import _build_conninfo
+    from tai42_dynamic_postgres_mcp.database.connection import _build_conninfo
 
     info = _build_conninfo()
     assert "dbname=" in info
@@ -330,7 +330,7 @@ async def test_cursor_yields_cursor(fake_pool):
 
 
 def test_vector_loader_parses_literal():
-    from tai_dynamic_postgres_mcp.database.helpers import VectorLoader
+    from tai42_dynamic_postgres_mcp.database.helpers import VectorLoader
 
     loader = VectorLoader.__new__(VectorLoader)
     assert loader.load(b"[1.0,2.5,3.0]") == [1.0, 2.5, 3.0]
@@ -356,7 +356,7 @@ class _FakeAdaptConn:
 
 
 def test_register_json_dumpers_registers_dict():
-    from tai_dynamic_postgres_mcp.database.helpers import register_json_dumpers
+    from tai42_dynamic_postgres_mcp.database.helpers import register_json_dumpers
 
     conn = _FakeAdaptConn()
     register_json_dumpers(conn)
@@ -364,7 +364,7 @@ def test_register_json_dumpers_registers_dict():
 
 
 async def test_register_vector_warns_when_missing(monkeypatch):
-    import tai_dynamic_postgres_mcp.database.helpers as helpers_mod
+    import tai42_dynamic_postgres_mcp.database.helpers as helpers_mod
 
     async def fake_fetch(conn, name):
         return None
@@ -375,7 +375,7 @@ async def test_register_vector_warns_when_missing(monkeypatch):
 
 
 async def test_register_types_loaders_runs(monkeypatch):
-    import tai_dynamic_postgres_mcp.database.helpers as helpers_mod
+    import tai42_dynamic_postgres_mcp.database.helpers as helpers_mod
 
     async def fake_fetch(conn, name):
         return None
@@ -393,8 +393,8 @@ async def test_register_types_loaders_runs(monkeypatch):
 
 @pytest.fixture
 def loader_env(monkeypatch, tmp_path):
-    import tai_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
-    import tai_dynamic_postgres_mcp.gen.loader as loader_mod
+    import tai42_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
+    import tai42_dynamic_postgres_mcp.gen.loader as loader_mod
 
     monkeypatch.setattr(base_gen, "OUTPUT_DIR", tmp_path)
     monkeypatch.setattr(loader_mod, "OUTPUT_DIR", tmp_path)
@@ -436,11 +436,11 @@ async def test_generated_insert_tool_threads_model_fields_set(monkeypatch, tmp_p
 
     from fastmcp import FastMCP
 
-    import tai_dynamic_postgres_mcp.core.app as app_mod
-    import tai_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
-    import tai_dynamic_postgres_mcp.gen.loader as loader_mod
+    import tai42_dynamic_postgres_mcp.core.app as app_mod
+    import tai42_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
+    import tai42_dynamic_postgres_mcp.gen.loader as loader_mod
     from schema_helpers import col, schema, table
-    from tai_dynamic_postgres_mcp import tools
+    from tai42_dynamic_postgres_mcp import tools
 
     # A fresh app so decorating the generated tool never pollutes the singleton.
     monkeypatch.setattr(app_mod, "mcp_app", FastMCP())
@@ -456,12 +456,12 @@ async def test_generated_insert_tool_threads_model_fields_set(monkeypatch, tmp_p
     monkeypatch.setattr(loader_mod, "introspect_schema", fake_introspect)
 
     generated_modules = [
-        f"tai_dynamic_postgres_mcp.tools.{name}"
+        f"tai42_dynamic_postgres_mcp.tools.{name}"
         for name in ("select_joined_tools", "select_tools", "insert_tools", "update_tools", "delete_tools")
     ]
     try:
         await loader_mod.load_dynamic_tools(overwrite=True, readonly=False)
-        module = sys.modules["tai_dynamic_postgres_mcp.tools.insert_tools"]
+        module = sys.modules["tai42_dynamic_postgres_mcp.tools.insert_tools"]
 
         captured: dict = {}
 
@@ -507,8 +507,8 @@ async def test_loader_readonly_prunes_write_tools(loader_env):
 async def test_loader_select_joined_name_collision_raises(monkeypatch, tmp_path):
     # Two distinct --select-joined groups whose derived names flatten to the same
     # tool/model name must raise, not let FastMCP silently overwrite one join tool.
-    import tai_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
-    import tai_dynamic_postgres_mcp.gen.loader as loader_mod
+    import tai42_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
+    import tai42_dynamic_postgres_mcp.gen.loader as loader_mod
     from schema_helpers import col, schema, table
 
     monkeypatch.setattr(base_gen, "OUTPUT_DIR", tmp_path)
@@ -538,8 +538,8 @@ async def test_loader_select_joined_name_collision_raises(monkeypatch, tmp_path)
 
 async def test_loader_select_joined_duplicate_group_raises(monkeypatch, tmp_path):
     # An exact duplicate group also collides on the derived name and must raise.
-    import tai_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
-    import tai_dynamic_postgres_mcp.gen.loader as loader_mod
+    import tai42_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
+    import tai42_dynamic_postgres_mcp.gen.loader as loader_mod
     from schema_helpers import col, schema, table
 
     monkeypatch.setattr(base_gen, "OUTPUT_DIR", tmp_path)
@@ -566,8 +566,8 @@ async def test_loader_select_joined_duplicate_group_raises(monkeypatch, tmp_path
 
 async def test_loader_select_joined_distinct_groups_generate(monkeypatch, tmp_path):
     # Non-colliding groups still generate a join tool file without error.
-    import tai_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
-    import tai_dynamic_postgres_mcp.gen.loader as loader_mod
+    import tai42_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
+    import tai42_dynamic_postgres_mcp.gen.loader as loader_mod
     from schema_helpers import col, schema, table
 
     monkeypatch.setattr(base_gen, "OUTPUT_DIR", tmp_path)
@@ -608,11 +608,11 @@ async def test_loader_deregisters_write_tools_on_readonly_reload(monkeypatch, tm
 
     from fastmcp import FastMCP
 
-    import tai_dynamic_postgres_mcp.core.app as app_mod
-    import tai_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
-    import tai_dynamic_postgres_mcp.gen.loader as loader_mod
+    import tai42_dynamic_postgres_mcp.core.app as app_mod
+    import tai42_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
+    import tai42_dynamic_postgres_mcp.gen.loader as loader_mod
     from schema_helpers import col, schema, table
-    from tai_dynamic_postgres_mcp import tools
+    from tai42_dynamic_postgres_mcp import tools
 
     monkeypatch.setattr(base_gen, "OUTPUT_DIR", tmp_path)
     monkeypatch.setattr(loader_mod, "OUTPUT_DIR", tmp_path)
@@ -630,7 +630,7 @@ async def test_loader_deregisters_write_tools_on_readonly_reload(monkeypatch, tm
     monkeypatch.setattr(loader_mod, "introspect_schema", fake_introspect)
 
     generated_modules = [
-        f"tai_dynamic_postgres_mcp.tools.{name}"
+        f"tai42_dynamic_postgres_mcp.tools.{name}"
         for name in ("select_joined_tools", "select_tools", "insert_tools", "update_tools", "delete_tools")
     ]
 
@@ -665,12 +665,12 @@ async def test_loader_tracks_partial_tools_when_reload_raises(monkeypatch, tmp_p
 
     from fastmcp import FastMCP
 
-    import tai_dynamic_postgres_mcp.core.app as app_mod
-    import tai_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
-    import tai_dynamic_postgres_mcp.gen.builders.select_gen as select_gen_mod
-    import tai_dynamic_postgres_mcp.gen.loader as loader_mod
+    import tai42_dynamic_postgres_mcp.core.app as app_mod
+    import tai42_dynamic_postgres_mcp.gen.builders.base_gen as base_gen
+    import tai42_dynamic_postgres_mcp.gen.builders.select_gen as select_gen_mod
+    import tai42_dynamic_postgres_mcp.gen.loader as loader_mod
     from schema_helpers import col, schema, table
-    from tai_dynamic_postgres_mcp import tools
+    from tai42_dynamic_postgres_mcp import tools
 
     monkeypatch.setattr(base_gen, "OUTPUT_DIR", tmp_path)
     monkeypatch.setattr(loader_mod, "OUTPUT_DIR", tmp_path)
@@ -687,7 +687,7 @@ async def test_loader_tracks_partial_tools_when_reload_raises(monkeypatch, tmp_p
     # Make the select_tools module register one tool and then raise mid-import.
     def boom_generate_file(self, tables, fks):
         self.output_path.write_text(
-            "from tai_dynamic_postgres_mcp.core.app import mcp_app\n"
+            "from tai42_dynamic_postgres_mcp.core.app import mcp_app\n"
             "\n"
             "@mcp_app.tool\n"
             "def partial_tool_select():\n"
@@ -698,7 +698,7 @@ async def test_loader_tracks_partial_tools_when_reload_raises(monkeypatch, tmp_p
 
     monkeypatch.setattr(select_gen_mod.SelectGen, "generate_file", boom_generate_file)
 
-    generated_modules = [f"tai_dynamic_postgres_mcp.tools.{name}" for name in ("select_joined_tools", "select_tools")]
+    generated_modules = [f"tai42_dynamic_postgres_mcp.tools.{name}" for name in ("select_joined_tools", "select_tools")]
 
     # Isolate the import search path and module cache so the real import reads
     # this test's boom file from tmp_path (other tests leave stale tools.__path__
@@ -749,7 +749,7 @@ async def test_loader_raises_on_name_collision(loader_env, monkeypatch):
 
 @pytest.fixture
 def runner_env(monkeypatch):
-    import tai_dynamic_postgres_mcp.cli.main as main_mod
+    import tai42_dynamic_postgres_mcp.cli.main as main_mod
 
     calls = {"run_async": None, "closed": 0}
 
@@ -838,7 +838,7 @@ async def test_runner_http_passes_host_port(runner_env):
 
 
 async def test_app_lifespan_opens_and_closes_pool(monkeypatch):
-    import tai_dynamic_postgres_mcp.core.app as app_mod
+    import tai42_dynamic_postgres_mcp.core.app as app_mod
 
     events = []
 

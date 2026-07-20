@@ -1,5 +1,5 @@
 name: Bug report
-description: Report a defect in tai-dynamic-postgres-mcp (schema-driven PostgreSQL MCP tool generator)
+description: Report a defect in tai42-dynamic-postgres-mcp (schema-driven PostgreSQL MCP tool generator)
 labels: ["bug"]
 body:
   - type: textarea
@@ -20,7 +20,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: tai-dynamic-postgres-mcp version
+      label: tai42-dynamic-postgres-mcp version
       placeholder: "0.1.0"
     validations:
       required: true

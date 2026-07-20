@@ -3,11 +3,11 @@ from typing import Any, Dict, List, Optional, Type, Union, cast
 from psycopg import sql
 from psycopg.rows import dict_row
 
-from tai_dynamic_postgres_mcp.database.connection import cursor
-from tai_dynamic_postgres_mcp.gen.filters.builder import ColumnResolver, build_where_clause
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
-from tai_dynamic_postgres_mcp.gen.order.builder import build_order_by_clause
-from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
+from tai42_dynamic_postgres_mcp.database.connection import cursor
+from tai42_dynamic_postgres_mcp.gen.filters.builder import ColumnResolver, build_where_clause
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.gen.order.builder import build_order_by_clause
+from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
 
 
 async def run_select(

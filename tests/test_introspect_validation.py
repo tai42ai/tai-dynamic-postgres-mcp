@@ -1,6 +1,6 @@
 import pytest
 
-from tai_dynamic_postgres_mcp.gen.schema.introspect import _require_safe_identifier
+from tai42_dynamic_postgres_mcp.gen.schema.introspect import _require_safe_identifier
 
 
 @pytest.mark.parametrize(

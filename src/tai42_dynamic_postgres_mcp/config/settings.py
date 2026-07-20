@@ -12,7 +12,7 @@ class PostgresSettings(BaseSettings):
         "env_prefix": "PG_",
     }
     tools_dir: str = Field(
-        default_factory=lambda: str(Path.home() / ".cache" / "tai-dynamic-postgres-mcp" / "tools"),
+        default_factory=lambda: str(Path.home() / ".cache" / "tai42-dynamic-postgres-mcp" / "tools"),
         description="Directory for generated tool files",
         validation_alias="TOOLS_DIR",
     )

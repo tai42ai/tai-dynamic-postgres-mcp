@@ -1,8 +1,8 @@
 from typing import List, Optional, Tuple
 
-from tai_dynamic_postgres_mcp.gen.builders.base_gen import Chunk, TableGen
-from tai_dynamic_postgres_mcp.gen.schema.codegen import sql_columns_to_pydantic_model
-from tai_dynamic_postgres_mcp.gen.schema.introspect import TableInfo
+from tai42_dynamic_postgres_mcp.gen.builders.base_gen import Chunk, TableGen
+from tai42_dynamic_postgres_mcp.gen.schema.codegen import sql_columns_to_pydantic_model
+from tai42_dynamic_postgres_mcp.gen.schema.introspect import TableInfo
 
 _FUNC_PREFIX = "update"
 
@@ -13,9 +13,9 @@ import uuid
 from decimal import Decimal
 from typing import Any, Optional, List, Union
 from pydantic import BaseModel
-from tai_dynamic_postgres_mcp.core.app import mcp_app
-from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.core.app import mcp_app
+from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
 
 """
 

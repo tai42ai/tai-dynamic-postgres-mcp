@@ -5,9 +5,9 @@ from typing import Literal, Optional, Tuple
 
 import click
 
-from tai_dynamic_postgres_mcp.core.app import mcp_app
-from tai_dynamic_postgres_mcp.database.connection import close_connection_pool, get_async_connection
-from tai_dynamic_postgres_mcp.gen.loader import load_dynamic_tools
+from tai42_dynamic_postgres_mcp.core.app import mcp_app
+from tai42_dynamic_postgres_mcp.database.connection import close_connection_pool, get_async_connection
+from tai42_dynamic_postgres_mcp.gen.loader import load_dynamic_tools
 
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())

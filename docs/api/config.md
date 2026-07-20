@@ -1,3 +1,3 @@
 # Config
 
-::: tai_dynamic_postgres_mcp.config.settings
+::: tai42_dynamic_postgres_mcp.config.settings

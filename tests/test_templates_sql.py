@@ -10,8 +10,8 @@ import pytest
 from psycopg.types.json import Json
 from pydantic import BaseModel
 
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
-from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
 
 
 class FakeCursor:
@@ -69,10 +69,10 @@ def capture(monkeypatch):
         def fake_cursor(*args, **kwargs):
             return cur
 
-        import tai_dynamic_postgres_mcp.gen.templates.common as common_mod
-        import tai_dynamic_postgres_mcp.gen.templates.delete as delete_mod
-        import tai_dynamic_postgres_mcp.gen.templates.insert as insert_mod
-        import tai_dynamic_postgres_mcp.gen.templates.update as update_mod
+        import tai42_dynamic_postgres_mcp.gen.templates.common as common_mod
+        import tai42_dynamic_postgres_mcp.gen.templates.delete as delete_mod
+        import tai42_dynamic_postgres_mcp.gen.templates.insert as insert_mod
+        import tai42_dynamic_postgres_mcp.gen.templates.update as update_mod
 
         monkeypatch.setattr(insert_mod, "get_connection_pool", fake_pool)
         monkeypatch.setattr(update_mod, "get_connection_pool", fake_pool)
@@ -91,7 +91,7 @@ def rendered(cap):
 
 
 async def test_insert_exact_sql_and_params(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     cap = capture(rows=[(1,), (2,)])
     result = await insert_tmpl("public.items", ["name", "qty"], [("a", 1), ("b", 2)], pk_columns=["id"])
@@ -101,7 +101,7 @@ async def test_insert_exact_sql_and_params(capture):
 
 
 async def test_insert_default_column_emits_default_keyword(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     cap = capture(rows=[(5,)])
     # id omitted (not in the provided set) with a DB default -> DEFAULT keyword.
@@ -118,7 +118,7 @@ async def test_insert_default_column_emits_default_keyword(capture):
 
 
 async def test_insert_explicit_null_overrides_default(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     cap = capture(rows=[(5,)])
     # id explicitly sent as None (in the provided set) -> NULL binds, not DEFAULT,
@@ -137,7 +137,7 @@ async def test_insert_explicit_null_overrides_default(capture):
 
 
 async def test_insert_provided_fields_none_binds_all(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     cap = capture(rows=[(5,)])
     # Without provided_fields every listed column is treated as supplied, so a
@@ -148,7 +148,7 @@ async def test_insert_provided_fields_none_binds_all(capture):
 
 
 async def test_insert_json_column_wrapped_array_not_wrapped(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     cap = capture(rows=[(1,)])
     await insert_tmpl("public.d", ["meta"], [({"k": 1},)], json_columns=["meta"], pk_columns=["id"])
@@ -161,7 +161,7 @@ async def test_insert_json_column_wrapped_array_not_wrapped(capture):
 
 
 async def test_insert_no_pk_returns_rowcount(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     cap = capture(rowcount=3)
     result = await insert_tmpl("public.log", ["msg"], [("x",)], pk_columns=[])
@@ -170,7 +170,7 @@ async def test_insert_no_pk_returns_rowcount(capture):
 
 
 async def test_insert_composite_pk_returns_tuples(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     cap = capture(rows=[(1, 2)])
     result = await insert_tmpl("public.link", ["a", "b"], [(1, 2)], pk_columns=["a", "b"])
@@ -179,7 +179,7 @@ async def test_insert_composite_pk_returns_tuples(capture):
 
 
 async def test_insert_empty_values_short_circuits(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     capture()
     assert await insert_tmpl("public.t", ["a"], [], pk_columns=["id"]) == []
@@ -187,7 +187,7 @@ async def test_insert_empty_values_short_circuits(capture):
 
 
 async def test_insert_rogue_column_key_is_quoted(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 
     cap = capture(rows=[(1,)])
     await insert_tmpl("public.t", ["ok", 'evil"; DROP TABLE x; --'], [(1, 2)], pk_columns=["id"])
@@ -204,7 +204,7 @@ class _Upd(BaseModel):
 
 
 async def test_update_exact_sql_and_params(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     cap = capture(rowcount=1)
     n = await update_tmpl(
@@ -219,7 +219,7 @@ async def test_update_exact_sql_and_params(capture):
 
 
 async def test_update_empty_payload_raises(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     capture()
     with pytest.raises(ValueError, match="No fields provided to update"):
@@ -227,7 +227,7 @@ async def test_update_empty_payload_raises(capture):
 
 
 async def test_update_unfiltered_blocked(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     capture()
     with pytest.raises(ValueError, match="without a WHERE filter"):
@@ -239,7 +239,7 @@ class _UpdJson(BaseModel):
 
 
 async def test_update_json_column_wrapped(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     cap = capture(rowcount=1)
     await update_tmpl(
@@ -253,7 +253,7 @@ async def test_update_json_column_wrapped(capture):
 
 
 async def test_update_explicit_null_sets_null(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     cap = capture(rowcount=1)
     # name explicitly sent as None -> SET name = NULL (not dropped from the update).
@@ -269,7 +269,7 @@ async def test_update_explicit_null_sets_null(capture):
 
 
 async def test_update_omitted_field_not_updated(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     cap = capture(rowcount=1)
     # qty omitted -> only name is in the SET list; qty is left untouched.
@@ -291,7 +291,7 @@ class _Rogue:
 
 
 async def test_update_rogue_field_key_is_quoted(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.update import update_tmpl
 
     cap = capture(rowcount=1)
     await update_tmpl("public.t", ["c"], _Rogue(), where=WhereFilter.model_validate({"c": {"eq": 1}}))
@@ -302,7 +302,7 @@ async def test_update_rogue_field_key_is_quoted(capture):
 
 
 async def test_delete_exact_sql_and_params(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
 
     cap = capture(rowcount=2)
     n = await delete_tmpl("public.items", ["id"], where=WhereFilter.model_validate({"id": {"eq": 1}}))
@@ -312,7 +312,7 @@ async def test_delete_exact_sql_and_params(capture):
 
 
 async def test_delete_unfiltered_blocked(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
 
     capture()
     with pytest.raises(ValueError, match="without a WHERE filter"):
@@ -320,7 +320,7 @@ async def test_delete_unfiltered_blocked(capture):
 
 
 async def test_delete_supplied_empty_filter_raises(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.delete import delete_tmpl
 
     capture()
     with pytest.raises(ValueError, match="empty"):
@@ -331,7 +331,7 @@ async def test_delete_supplied_empty_filter_raises(capture):
 
 
 async def test_select_exact_sql_with_offset_and_nulls(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     cap = capture(rows=[{"id": 1}])
     rows = await select_tmpl(
@@ -350,7 +350,7 @@ async def test_select_exact_sql_with_offset_and_nulls(capture):
 
 
 async def test_select_maps_rows_to_model(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     class Row(BaseModel):
         id: int
@@ -363,7 +363,7 @@ async def test_select_maps_rows_to_model(capture):
 
 
 async def test_select_projects_only_exposed_columns(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     cap = capture(rows=[{"id": 1}])
     # Full allowlist keeps "secret" filterable, but the projection omits it, so
@@ -380,7 +380,7 @@ async def test_select_projects_only_exposed_columns(capture):
 
 
 async def test_select_empty_projection_raises(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     capture()
     with pytest.raises(ValueError, match="no columns to project"):
@@ -388,7 +388,7 @@ async def test_select_empty_projection_raises(capture):
 
 
 async def test_select_supplied_empty_filter_raises(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.select import select_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select import select_tmpl
 
     capture()
     with pytest.raises(ValueError, match="empty"):
@@ -399,7 +399,7 @@ async def test_select_supplied_empty_filter_raises(capture):
 
 
 async def test_select_joined_exact_sql_from_identifier_parts(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
 
     cap = capture(rows=[{"public_users_id": 1}])
     select_items = [
@@ -426,7 +426,7 @@ async def test_select_joined_exact_sql_from_identifier_parts(capture):
 
 
 async def test_select_joined_empty_projection_raises(capture):
-    from tai_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
+    from tai42_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
 
     capture()
     with pytest.raises(ValueError, match="no columns to project"):

@@ -1,6 +1,6 @@
 import pytest
 
-from tai_dynamic_postgres_mcp.gen.schema.codegen import (
+from tai42_dynamic_postgres_mcp.gen.schema.codegen import (
     is_json_type,
     sql_columns_to_pydantic_model,
     sql_type_to_python_type,

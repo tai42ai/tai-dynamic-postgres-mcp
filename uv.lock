@@ -1633,7 +1633,7 @@ wheels = [
 ]
 
 [[package]]
-name = "tai-dynamic-postgres-mcp"
+name = "tai42-dynamic-postgres-mcp"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [

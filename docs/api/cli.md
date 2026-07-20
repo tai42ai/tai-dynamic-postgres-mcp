@@ -1,3 +1,3 @@
 # CLI
 
-::: tai_dynamic_postgres_mcp.cli.main
+::: tai42_dynamic_postgres_mcp.cli.main

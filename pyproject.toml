@@ -3,7 +3,7 @@ requires = ["setuptools>=77.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tai-dynamic-postgres-mcp"
+name = "tai42-dynamic-postgres-mcp"
 version = "0.1.0"
 description = "Schema-driven generator for safe, scoped PostgreSQL DML tools in FastMCP agent systems"
 authors = [{ name = "tai42", email = "oss@tai42.ai" }]
@@ -49,7 +49,7 @@ Issues = "https://github.com/tai42ai/tai-dynamic-postgres-mcp/issues"
 Changelog = "https://github.com/tai42ai/tai-dynamic-postgres-mcp/blob/main/CHANGELOG.md"
 
 [project.entry-points.console_scripts]
-tai-postgres-mcp = "tai_dynamic_postgres_mcp.cli.main:main"
+tai42-postgres-mcp = "tai42_dynamic_postgres_mcp.cli.main:main"
 
 [dependency-groups]
 # Docs build: uv run --group docs mkdocs build --strict
@@ -62,7 +62,7 @@ docs = [
 package-dir = { "" = "src" }
 
 [tool.setuptools.package-data]
-tai_dynamic_postgres_mcp = ["py.typed"]
+tai42_dynamic_postgres_mcp = ["py.typed"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -77,7 +77,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["tai_dynamic_postgres_mcp"]
+source = ["tai42_dynamic_postgres_mcp"]
 
 [tool.coverage.report]
 fail_under = 97
@@ -96,8 +96,8 @@ select = ["E", "W", "F", "I", "B", "C4", "SIM", "PIE", "PT", "RUF", "TID"]
 [tool.ruff.lint.per-file-ignores]
 # These modules embed generated-tool source as string templates; their tool
 # docstrings are intentionally long single lines and must not be reflowed.
-"src/tai_dynamic_postgres_mcp/gen/builders/select_gen.py" = ["E501"]
-"src/tai_dynamic_postgres_mcp/gen/builders/select_joined_gen.py" = ["E501"]
+"src/tai42_dynamic_postgres_mcp/gen/builders/select_gen.py" = ["E501"]
+"src/tai42_dynamic_postgres_mcp/gen/builders/select_joined_gen.py" = ["E501"]
 
 [tool.pyright]
 include = ["src"]

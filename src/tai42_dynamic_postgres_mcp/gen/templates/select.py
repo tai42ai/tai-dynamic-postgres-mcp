@@ -2,10 +2,10 @@ from typing import Any, List, Optional, Sequence, Type
 
 from psycopg import sql
 
-from tai_dynamic_postgres_mcp.gen.filters.builder import resolver_from_columns
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
-from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
-from tai_dynamic_postgres_mcp.gen.templates.common import run_select
+from tai42_dynamic_postgres_mcp.gen.filters.builder import resolver_from_columns
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
+from tai42_dynamic_postgres_mcp.gen.templates.common import run_select
 
 
 async def select_tmpl(

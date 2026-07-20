@@ -1,11 +1,11 @@
 import pytest
 
 from schema_helpers import col, schema, table
-from tai_dynamic_postgres_mcp.gen.builders.delete_gen import DeleteGen
-from tai_dynamic_postgres_mcp.gen.builders.insert_gen import InsertGen
-from tai_dynamic_postgres_mcp.gen.builders.select_gen import SelectGen
-from tai_dynamic_postgres_mcp.gen.builders.select_joined_gen import SelectJoinedGen
-from tai_dynamic_postgres_mcp.gen.builders.update_gen import UpdateGen
+from tai42_dynamic_postgres_mcp.gen.builders.delete_gen import DeleteGen
+from tai42_dynamic_postgres_mcp.gen.builders.insert_gen import InsertGen
+from tai42_dynamic_postgres_mcp.gen.builders.select_gen import SelectGen
+from tai42_dynamic_postgres_mcp.gen.builders.select_joined_gen import SelectJoinedGen
+from tai42_dynamic_postgres_mcp.gen.builders.update_gen import UpdateGen
 
 USERS = table(
     "public.users",

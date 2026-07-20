@@ -2,9 +2,9 @@ from typing import List, Optional
 
 from psycopg import sql
 
-from tai_dynamic_postgres_mcp.database.connection import get_connection_pool
-from tai_dynamic_postgres_mcp.gen.filters.builder import build_where_clause, resolver_from_columns
-from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai42_dynamic_postgres_mcp.database.connection import get_connection_pool
+from tai42_dynamic_postgres_mcp.gen.filters.builder import build_where_clause, resolver_from_columns
+from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
 
 _DELETE_SQL_TEMPLATE = "DELETE FROM {table}"
 

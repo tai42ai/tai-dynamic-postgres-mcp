@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastmcp import FastMCP
 
-from tai_dynamic_postgres_mcp.database.connection import close_connection_pool, get_connection_pool
+from tai42_dynamic_postgres_mcp.database.connection import close_connection_pool, get_connection_pool
 
 
 @asynccontextmanager
