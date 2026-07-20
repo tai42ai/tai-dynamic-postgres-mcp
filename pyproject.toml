@@ -23,7 +23,7 @@ classifiers = [
 ]
 dependencies = [
     "click>=8.2.1",
-    "psycopg[binary,pool]>=3.2.9",
+    "psycopg[binary,pool]>=3.3.4",
     "python-dotenv>=1.1.1",
     "pydantic-settings>=2.10.1",
     "pydantic>=2.12",
