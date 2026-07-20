@@ -55,7 +55,7 @@ tai-postgres-mcp = "tai_dynamic_postgres_mcp.cli.main:main"
 # Docs build: uv run --group docs mkdocs build --strict
 docs = [
     "mkdocs-material>=9.5",
-    "mkdocstrings[python]>=0.27",
+    "mkdocstrings[python]>=1.0.6",
 ]
 
 [tool.setuptools]
