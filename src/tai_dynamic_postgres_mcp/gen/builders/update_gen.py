@@ -1,0 +1,84 @@
+from typing import List, Optional, Tuple
+
+from tai_dynamic_postgres_mcp.gen.builders.base_gen import Chunk, TableGen
+from tai_dynamic_postgres_mcp.gen.schema.codegen import sql_columns_to_pydantic_model
+from tai_dynamic_postgres_mcp.gen.schema.introspect import TableInfo
+
+_FUNC_PREFIX = "update"
+
+_IMPORTS = """# This file is auto-generated. Do not edit manually.
+
+import datetime
+import uuid
+from decimal import Decimal
+from typing import Any, Optional, List, Union
+from pydantic import BaseModel
+from tai_dynamic_postgres_mcp.core.app import mcp_app
+from tai_dynamic_postgres_mcp.gen.templates.update import update_tmpl
+from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+
+"""
+
+_TOOL_TEMPLATE = '''
+@mcp_app.tool
+async def {func_name}(data: {model_name}, where: Optional[WhereFilter] = None) -> int:
+    """
+    Updates rows in the `{table}` table.
+
+    Parameters:
+        data: Partial `{model_name}` object with fields to update. At least one
+              field must be set; an empty payload raises.
+        where: Filters selecting the rows to update, using `WhereFilter`.
+               A WHERE filter is required unless the server was started with
+               --allow-unfiltered; updating with no filter otherwise raises.
+
+    Returns:
+        Number of rows updated in the `{table}` table.
+    """
+    return await update_tmpl(
+        "{table}",
+        {col_list},
+        data,
+        where,
+        allow_unfiltered={allow_unfiltered},
+        json_columns={json_columns},
+    )
+'''
+
+
+class UpdateGen(TableGen):
+    writable_only = True
+
+    def __init__(self, ignore_columns: Optional[List[str]] = None, allow_unfiltered: bool = False) -> None:
+        super().__init__(_FUNC_PREFIX, _IMPORTS, _TOOL_TEMPLATE, ignore_columns)
+        self.allow_unfiltered = allow_unfiltered
+
+    def generate_tool(self, table_info: TableInfo) -> Optional[Chunk]:
+        included = self.included(table_info)
+        # A table with every updatable column ignored can never set a field, so
+        # its tool would raise "No fields provided to update" on every call. Skip
+        # it (return None) rather than register a dead tool, mirroring insert.
+        if not included:
+            return None
+
+        # All update fields are optional (partial update).
+        optional_columns: List[Tuple[str, str]] = []
+        for col in included:
+            typ = col.python_type if col.python_type.startswith("Optional[") else f"Optional[{col.python_type}]"
+            optional_columns.append((col.name, typ))
+
+        json_columns = [col.name for col in included if col.is_json]
+
+        model_name, model_code = sql_columns_to_pydantic_model(self.prefix, table_info.qualified, optional_columns)
+
+        tool_code = self.template.format(
+            func_name=self.func_name(table_info.qualified),
+            model_name=model_name,
+            table=table_info.qualified,
+            # WHERE may filter on any real column, even ones excluded from updates.
+            col_list=repr(self.col_names(table_info)),
+            allow_unfiltered=repr(self.allow_unfiltered),
+            json_columns=repr(json_columns),
+        )
+
+        return model_code, tool_code

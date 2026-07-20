@@ -1,0 +1,163 @@
+from typing import Dict, Iterable, List, Optional, Tuple
+
+from tai_dynamic_postgres_mcp.gen.builders.base_gen import BaseGen, Chunk
+from tai_dynamic_postgres_mcp.gen.schema.codegen import sql_columns_to_pydantic_model
+from tai_dynamic_postgres_mcp.gen.schema.introspect import ForeignKey, TableInfo
+
+_FUNC_PREFIX = "select_joined"
+
+# A single join predicate as (left_identifier_parts, right_identifier_parts),
+# e.g. (["public", "users", "org_id"], ["public", "orgs", "id"]).
+JoinCondition = Tuple[List[str], List[str]]
+# A join step as (join_table_parts, [conditions...]).
+JoinStep = Tuple[List[str], List[JoinCondition]]
+
+_IMPORTS = """# This file is auto-generated. Do not edit manually.
+
+import datetime
+import uuid
+from decimal import Decimal
+from typing import Any, Optional, List, Union
+from pydantic import BaseModel
+from tai_dynamic_postgres_mcp.core.app import mcp_app
+from tai_dynamic_postgres_mcp.gen.templates.select_joined import select_joined_tmpl
+from tai_dynamic_postgres_mcp.gen.filters.models import WhereFilter
+from tai_dynamic_postgres_mcp.gen.order.models import OrderByItem
+
+"""
+
+_TOOL_TEMPLATE = '''
+@mcp_app.tool
+async def {func_name}(where: Optional[WhereFilter] = None, order_by: Optional[List[OrderByItem]] = None, limit: Optional[int] = None, offset: Optional[int] = None) -> List[{model_name}]:
+    """
+    Selects rows from joined tables: {tables_str}.
+
+    Parameters:
+        where: Optional filters to apply using `WhereFilter` on aliased columns (schema_table_column). For vector similarity (KNN), include in field filters like {{"aliased_vector": {{"knn": {{"query": [floats], "distance": "l2", "threshold": 0.5}}}}}}; this adds a distance-threshold predicate. To order results by distance, pass a KNN item in `order_by`. Combine with AND/OR as needed.
+        order_by: Optional list of fields and directions to order by (using aliased columns), applied in the given order.
+        limit: Optional maximum number of rows to return.
+        offset: Optional number of leading rows to skip (pagination).
+
+    Returns:
+        List of `{model_name}` objects from the joined tables.
+    """
+
+    return await select_joined_tmpl(
+        {select_items},
+        {from_parts},
+        {joins},
+        {column_map},
+        where,
+        order_by,
+        limit,
+        offset,
+        {model_name},
+    )
+'''
+
+
+class SelectJoinedGen(BaseGen):
+    def __init__(
+        self,
+        join_groups: Optional[List[List[str]]] = None,
+        ignore_columns: Optional[List[str]] = None,
+    ) -> None:
+        super().__init__(_FUNC_PREFIX, _IMPORTS, _TOOL_TEMPLATE, ignore_columns)
+        self.join_groups = join_groups or []
+
+    def tool_chunks(self, tables: Dict[str, TableInfo], fks: List[ForeignKey]) -> Iterable[Chunk]:
+        for group in self.join_groups:
+            chunk = self.generate_join_tool(group, tables, fks)
+            if chunk is not None:
+                yield chunk
+
+    def joined_group_name(self, group: List[str], tables: Dict[str, TableInfo]) -> str:
+        """Flattened ``schema_table1_table2_...`` base this group's tool and model derive from.
+
+        Both the generated tool's ``func_name`` and its Pydantic model name are
+        built from this single string, so two groups that produce the same value
+        would emit colliding names. Kept as the one source of truth so the
+        loader's cross-group collision guard and the generator can never drift.
+        """
+        for t in group:
+            if t not in tables:
+                raise ValueError(f"Table {t} not found in schema.")
+        schema_name = tables[group[0]].schema
+        table_names = "_".join(tables[g].name for g in group)
+        return f"{schema_name}_{table_names}"
+
+    def find_join_condition(self, table_a: str, table_b: str, fks: List[ForeignKey]) -> Optional[List[JoinCondition]]:
+        a_parts = table_a.split(".")
+        b_parts = table_b.split(".")
+        for fk_table, fk_cols, ref_table, ref_cols in fks:
+            if fk_table == table_a and ref_table == table_b:
+                return [([*a_parts, fc], [*b_parts, rc]) for fc, rc in zip(fk_cols, ref_cols, strict=True)]
+            if fk_table == table_b and ref_table == table_a:
+                return [([*b_parts, fc], [*a_parts, rc]) for fc, rc in zip(fk_cols, ref_cols, strict=True)]
+        return None
+
+    def generate_join_tool(
+        self, group: List[str], tables: Dict[str, TableInfo], fks: List[ForeignKey]
+    ) -> Optional[Chunk]:
+        if len(group) < 2:
+            raise ValueError("Join group must have at least two tables.")
+
+        # Build join steps in the order provided, joining each to a previous table.
+        joins: List[JoinStep] = []
+        current_tables = [group[0]]
+        for t in group[1:]:
+            cond: Optional[List[JoinCondition]] = None
+            for prev in current_tables:
+                cond = self.find_join_condition(prev, t, fks)
+                if cond:
+                    break
+            if not cond:
+                raise ValueError(f"No foreign key relationship found to join {t} with any of {current_tables}")
+            joins.append((t.split("."), cond))
+            current_tables.append(t)
+
+        # Collect columns with schema-qualified aliases so equal table names in
+        # different schemas (s1.users, s2.users) do not collide on alias.
+        column_map: Dict[str, str] = {}
+        select_items: List[Tuple[List[str], str]] = []
+        model_columns: List[Tuple[str, str]] = []
+        base_table = group[0]
+        for t in group:
+            if t not in tables:
+                raise ValueError(f"Table {t} not found in schema.")
+            table_info = tables[t]
+            parts = t.split(".")
+            for col in table_info.columns:
+                if col.name in self.ignore_columns:
+                    continue
+                alias = f"{table_info.schema}_{table_info.name}_{col.name}"
+                if alias in column_map:
+                    raise ValueError(f"Join alias collision on {alias!r}; column selections are ambiguous.")
+                column_map[alias] = f"{t}.{col.name}"
+                select_items.append(([*parts, col.name], alias))
+                typ = col.python_type
+                if t != base_table and not typ.startswith("Optional["):
+                    typ = f"Optional[{typ}]"
+                model_columns.append((alias, typ))
+
+        # Every projected column ignored leaves an empty SELECT list and an empty
+        # Row model, so the tool would raise on every call. Skip it (return None)
+        # rather than register a dead tool, mirroring select/insert/update.
+        if not select_items:
+            return None
+
+        from_parts = group[0].split(".")
+        joined_group = self.joined_group_name(group, tables)
+        model_name, model_code = sql_columns_to_pydantic_model(self.prefix, joined_group, model_columns)
+
+        tool_code = self.template.format(
+            func_name=self.func_name(joined_group),
+            model_name=model_name,
+            tables_str=", ".join(group),
+            select_items=repr(select_items),
+            from_parts=repr(from_parts),
+            joins=repr(joins),
+            column_map=repr(column_map),
+        )
+
+        return model_code, tool_code
