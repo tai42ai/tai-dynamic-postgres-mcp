@@ -1,0 +1,30 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+
+# Version control and CI
+.git/
+.github/
+
+# Tests and tooling
+tests/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+
+# Misc
+*.log
+.env
+.env.*
