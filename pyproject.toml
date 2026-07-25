@@ -1,0 +1,105 @@
+[build-system]
+requires = ["setuptools>=77.0.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tai42-dynamic-postgres-mcp"
+version = "0.1.1"
+description = "Schema-driven generator for safe, scoped PostgreSQL DML tools in FastMCP agent systems"
+authors = [{ name = "tai42", email = "oss@tai42.ai" }]
+readme = "README.md"
+license = "Apache-2.0"
+license-files = ["LICENSE", "NOTICE"]
+requires-python = ">=3.13"
+keywords = ["postgresql", "mcp", "fastmcp", "agents", "llm", "tools", "pgvector"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Database",
+    "Topic :: Software Development :: Libraries",
+    "Typing :: Typed",
+]
+dependencies = [
+    "click>=8.2.1",
+    "psycopg[binary,pool]>=3.2.9",
+    "python-dotenv>=1.1.1",
+    "pydantic-settings>=2.10.1",
+    "pydantic>=2.12",
+    "fastmcp>=3",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-asyncio>=0.23",
+    "pytest-cov>=5.0",
+    "ruff>=0.6",
+    "pyright>=1.1.390",
+]
+test-integration = [
+    "testcontainers[postgres]>=4.0",
+]
+
+[project.urls]
+Homepage = "https://tai42.ai"
+Repository = "https://github.com/tai42ai/tai-dynamic-postgres-mcp"
+Issues = "https://github.com/tai42ai/tai-dynamic-postgres-mcp/issues"
+Changelog = "https://github.com/tai42ai/tai-dynamic-postgres-mcp/blob/main/CHANGELOG.md"
+
+[project.entry-points.console_scripts]
+tai42-postgres-mcp = "tai42_dynamic_postgres_mcp.cli.main:main"
+
+[dependency-groups]
+# Docs build: uv run --group docs mkdocs build --strict
+docs = [
+    "mkdocs-material>=9.5",
+    "mkdocstrings[python]>=0.27",
+]
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.package-data]
+tai42_dynamic_postgres_mcp = ["py.typed"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+# Integration tests are opt-in (need Docker); run them with `pytest -m integration`.
+addopts = "-m 'not integration'"
+markers = [
+    "integration: tests that require a live PostgreSQL instance (Docker)",
+]
+
+[tool.coverage.run]
+source = ["tai42_dynamic_postgres_mcp"]
+
+[tool.coverage.report]
+fail_under = 97
+
+[tool.ruff]
+line-length = 120
+target-version = "py313"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+# Keep the project's existing typing style (typing.Optional / List): the `UP`
+# rule set is deliberately excluded so `Optional`/`List` are not rewritten.
+# Everything else enforces correctness, import order, and common cleanups.
+select = ["E", "W", "F", "I", "B", "C4", "SIM", "PIE", "PT", "RUF", "TID"]
+
+[tool.ruff.lint.per-file-ignores]
+# These modules embed generated-tool source as string templates; their tool
+# docstrings are intentionally long single lines and must not be reflowed.
+"src/tai42_dynamic_postgres_mcp/gen/builders/select_gen.py" = ["E501"]
+"src/tai42_dynamic_postgres_mcp/gen/builders/select_joined_gen.py" = ["E501"]
+
+[tool.pyright]
+include = ["src"]
+pythonVersion = "3.13"
+typeCheckingMode = "strict"
