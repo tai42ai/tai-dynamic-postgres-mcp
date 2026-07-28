@@ -50,12 +50,22 @@ Highlights, in full detail in [SECURITY.md](SECURITY.md):
 
 ## Installation
 
-Run directly from Git with `uvx`, or install into an environment:
+Requires **Python 3.13+**. Install from PyPI into the environment that runs the
+server, or run it without installing:
 
 ```bash
-uvx --from git+https://github.com/tai42ai/tai-dynamic-postgres-mcp.git tai42-postgres-mcp
-# or
-pip install git+https://github.com/tai42ai/tai-dynamic-postgres-mcp.git
+uv add tai42-dynamic-postgres-mcp
+uvx --from tai42-dynamic-postgres-mcp tai42-postgres-mcp   # run it without installing
+```
+
+Or from source — clone this repo and add it as an editable dependency, or run
+the clone with `uvx`:
+
+```bash
+git clone https://github.com/tai42ai/tai-dynamic-postgres-mcp   # next to your app checkout
+cd /path/to/your/app
+uv add --editable ../tai-dynamic-postgres-mcp
+uvx --from ../tai-dynamic-postgres-mcp tai42-postgres-mcp
 ```
 
 ## Configuration
@@ -101,7 +111,7 @@ Connection and pooling are configured via environment variables:
       "command": "uvx",
       "args": [
         "--from",
-        "git+https://github.com/tai42ai/tai-dynamic-postgres-mcp.git",
+        "tai42-dynamic-postgres-mcp",
         "tai42-postgres-mcp",
         "--readonly"
       ],
@@ -177,13 +187,14 @@ docker run --rm -e PG_HOST=... -e PG_DB=... -e PG_USER=... -e PG_PASSWORD=... \
 See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```bash
-uv sync --extra dev --extra test-integration
-uv run ruff check .
-uv run ruff format --check .
-uv run pyright
-uv run pytest                 # unit tests
-uv run pytest -m integration  # CRUD tests against real Postgres (needs Docker)
-uv run --group docs mkdocs build --strict
+uv venv --python 3.13
+uv pip install --no-sources --group docs --editable ".[dev,test-integration]"
+uv run --no-sync ruff check .
+uv run --no-sync ruff format --check .
+uv run --no-sync pyright
+uv run --no-sync pytest --cov --cov-report=term-missing                 # unit tests
+uv run --no-sync pytest -m integration  # CRUD tests against real Postgres (needs Docker)
+uv run --no-sync mkdocs build --strict  # the docs site
 ```
 
 ## License

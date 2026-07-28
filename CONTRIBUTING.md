@@ -17,9 +17,8 @@ as quoted `psycopg.sql.Identifier` values; values are always bound parameters.
   drop input, or fall back in a way that hides a failure.
 - **Typed package** (`py.typed`). Pyright runs clean in strict mode.
 - **Changes to the tool contract or CLI** (tool signatures, generated behavior,
-  environment variables, flags) are called out explicitly in the PR description
-  and in `CHANGELOG.md` under "Unreleased", since they affect how users
-  integrate.
+  environment variables, flags) are called out explicitly in the PR description,
+  since they affect how users integrate.
 - Keep comments describing what the code does now, not its history.
 
 ## Layout
@@ -49,10 +48,10 @@ distribution.
 | --- | --- |
 | Distribution — PyPI, `pip install`, dependency pins | `tai42-<name>` |
 | Import package | `tai42_<name>` |
-| GitHub repository and sibling checkout directory | `tai-<name>` |
+| GitHub repository | `tai-<name>` |
 
-So a dependency is declared as `tai42-<name>` but resolved from `../tai-<name>`
-during local development, and both spellings are correct in their own context.
+So a dependency is declared as `tai42-<name>` while its repository is named
+`tai-<name>`, and both spellings are correct in their own context.
 
 Some surfaces are deliberately neither, and must not be renamed: the `tai` CLI
 command (`tai42` is an alias), the Prometheus metric namespace (`tai_tool_*`),
@@ -64,13 +63,14 @@ The project uses [uv](https://docs.astral.sh/uv/) and requires Python 3.13+.
 All of these must pass before a PR is merged; CI runs them on every push.
 
 ```bash
-uv sync --extra dev --extra test-integration
-uv run ruff check .                          # lint
-uv run ruff format --check .                 # format
-uv run pyright                               # type check (strict)
-uv run pytest                                # unit tests (no Docker needed)
-uv run pytest -m integration                 # CRUD tests against a real Postgres (needs Docker)
-uv run --group docs mkdocs build --strict    # docs
+uv venv --python 3.13
+uv pip install --no-sources --group docs --editable ".[dev,test-integration]"
+uv run --no-sync ruff check .
+uv run --no-sync ruff format --check .
+uv run --no-sync pyright
+uv run --no-sync pytest --cov --cov-report=term-missing                 # unit tests
+uv run --no-sync pytest -m integration  # CRUD tests against real Postgres (needs Docker)
+uv run --no-sync mkdocs build --strict  # the docs site
 ```
 
 Before any commit, run a secret scan over `src/` and `tests/` (e.g.
