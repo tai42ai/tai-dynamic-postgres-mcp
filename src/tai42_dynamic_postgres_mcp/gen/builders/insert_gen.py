@@ -19,7 +19,7 @@ from tai42_dynamic_postgres_mcp.gen.templates.insert import insert_tmpl
 """
 
 _TOOL_TEMPLATE = '''
-@mcp_app.tool
+@mcp_app.tool(tags={{"postgres"}})
 async def {func_name}(params: List[{model_name}], raise_on_conflict: bool = True) -> {return_type}:
     """
     Inserts multiple rows into the `{table}` table.

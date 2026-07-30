@@ -21,7 +21,7 @@ from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
 """
 
 _TOOL_TEMPLATE = '''
-@mcp_app.tool
+@mcp_app.tool(tags={{"postgres"}})
 async def {func_name}(where: Optional[WhereFilter] = None, order_by: Optional[List[OrderByItem]] = None, limit: Optional[int] = None, offset: Optional[int] = None) -> List[{model_name}]:
     """
     Selects rows from the `{table}` table.

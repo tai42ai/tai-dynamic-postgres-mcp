@@ -42,6 +42,20 @@ def test_all_generators_compile():
         generated(gen)
 
 
+@pytest.mark.parametrize(
+    "gen",
+    [
+        SelectGen(),
+        InsertGen(),
+        UpdateGen(),
+        DeleteGen(),
+        SelectJoinedGen([["public.users", "public.orgs"]]),
+    ],
+)
+def test_generated_tools_carry_postgres_tag(gen):
+    assert '@mcp_app.tool(tags={"postgres"})' in generated(gen)
+
+
 def test_select_passes_full_column_allowlist():
     code = generated(SelectGen(ignore_columns=["id"]))
     # id excluded from returned model but still allowed for WHERE/ORDER BY.

@@ -15,7 +15,7 @@ from tai42_dynamic_postgres_mcp.gen.filters.models import WhereFilter
 """
 
 _TOOL_TEMPLATE = '''
-@mcp_app.tool
+@mcp_app.tool(tags={{"postgres"}})
 async def {func_name}(where: Optional[WhereFilter] = None) -> int:
     """
     Deletes rows from the `{table}` table.
