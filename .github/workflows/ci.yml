@@ -29,8 +29,6 @@ jobs:
         run: uv run ruff format --check .
       - name: Pyright
         run: uv run pyright
-      - name: Docs build
-        run: uv run --group docs mkdocs build --strict
 
   test:
     runs-on: ubuntu-latest

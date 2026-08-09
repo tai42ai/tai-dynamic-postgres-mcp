@@ -24,7 +24,6 @@ uv sync --locked --python 3.13 --extra dev
 uv run ruff check .
 uv run ruff format --check .
 uv run pyright
-uv run --group docs mkdocs build --strict
 uv run --python 3.13 pytest --cov --cov-report=term-missing
 uv sync --locked --python 3.13 --extra dev --extra test-integration
 uv run pytest -m integration

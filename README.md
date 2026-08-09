@@ -68,119 +68,12 @@ uv add --editable ../tai-dynamic-postgres-mcp
 uvx --from ../tai-dynamic-postgres-mcp tai42-postgres-mcp
 ```
 
-## Configuration
+## Documentation
 
-Connection and pooling are configured via environment variables:
-
-| Variable | Default | Description |
-| --- | --- | --- |
-| `PG_HOST` | `localhost` | PostgreSQL host |
-| `PG_PORT` | `5432` | PostgreSQL port |
-| `PG_DB` | _required_ | Database name (no default; startup fails if unset) |
-| `PG_USER` | _required_ | Database user, use a least-privilege role (no default) |
-| `PG_PASSWORD` | _required_ | Database password (no default; startup fails if unset) |
-| `PG_STATEMENT_TIMEOUT` | `30000` | Per-connection `statement_timeout` in ms (`0` disables) |
-| `PG_POOL_MIN_SIZE` | `1` | Minimum pooled connections |
-| `PG_POOL_MAX_SIZE` | `10` | Maximum pooled connections |
-| `PG_POOL_TIMEOUT` | `10` | Pool acquire timeout (seconds) |
-| `PG_POOL_MAX_LIFETIME` | `300` | Max connection lifetime (seconds) |
-| `TOOLS_DIR` | `~/.cache/tai42-dynamic-postgres-mcp/tools` | Where generated tool files are written |
-
-## CLI options
-
-| Flag | Default | Description |
-| --- | --- | --- |
-| `--overwrite / --no-overwrite` | on | Regenerate the tool files on startup so they reflect the current schema. Pass `--no-overwrite` to reuse existing generated files |
-| `--readonly` | off | Generate only `select`/`select_joined` tools |
-| `--allow-unfiltered` | off | Allow `update`/`delete` to run without a `WHERE` filter (affects every row) |
-| `--select-joined a,b,c` | — | Generate a joined select over the given tables (repeatable) |
-| `--ignore-insert-column` | `id` | Column to exclude from insert inputs (repeatable) |
-| `--ignore-update-column` | `id` | Column to exclude from update inputs (repeatable) |
-| `--ignore-select-column` | — | Column to exclude from select output models (repeatable) |
-| `--ignore-select-joined-column` | — | Column to exclude from joined select models (repeatable) |
-| `-t, --transport` | `stdio` | `stdio`, `http`, `sse`, or `streamable-http` |
-| `--host` | `127.0.0.1` | Bind host (HTTP/SSE transports only) |
-| `--port` | `8000` | Bind port (HTTP/SSE transports only) |
-
-## Usage with an MCP client
-
-```json
-{
-  "mcpServers": {
-    "postgres": {
-      "command": "uvx",
-      "args": [
-        "--from",
-        "tai42-dynamic-postgres-mcp",
-        "tai42-postgres-mcp",
-        "--readonly"
-      ],
-      "env": {
-        "PG_HOST": "localhost",
-        "PG_PORT": "5432",
-        "PG_DB": "dbname",
-        "PG_USER": "agent",
-        "PG_PASSWORD": "password"
-      }
-    }
-  }
-}
-```
-
-## Generated tools
-
-For a table `public.orders` you get (unless `--readonly`):
-
-- `select_public_orders(where, order_by, limit, offset)`
-- `insert_public_orders(params, raise_on_conflict)`
-- `update_public_orders(data, where)`
-- `delete_public_orders(where)`
-
-Column types map to native Python: temporal columns to `datetime`/`date`/`time`,
-`uuid` to `uuid.UUID`, `numeric`/`decimal` to `Decimal`, `json`/`jsonb` to `Any`,
-and array columns to `list[...]`. `insert` returns the table's real primary key
-(a scalar list for a single-column key, a list of lists for a composite key, or
-the affected row count when the table has no primary key); columns with a
-database default are omittable. `order_by` items accept an optional `nulls`
-(`FIRST`/`LAST`); when unset PostgreSQL's default applies.
-
-### Filtering — `WhereFilter`
-
-`select`, `update`, and `delete` accept a `where` argument. Field names must be
-real columns of the table; unknown fields are rejected.
-
-```jsonc
-// Simple field filters (implicitly ANDed)
-{ "status": { "eq": "open" }, "total": { "gte": 100 } }
-
-// Logical composition
-{ "AND": [ { "status": { "eq": "open" } },
-           { "OR": [ { "total": { "gt": 1000 } }, { "vip": { "eq": true } } ] } ] }
-```
-
-Supported operators: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `like`, `not_like`,
-`ilike`, `not_ilike`, `in`, `not_in`, `between`, `is_null`, and `knn`
-(pgvector). Logical keys: `AND`, `OR`, `NOT`.
-
-### Vector search (pgvector)
-
-When a column is a `vector`, filter or order by similarity:
-
-```jsonc
-{ "embedding": { "knn": { "query": [0.1, 0.2, 0.3],
-                          "distance": "cosine",   // l2 | inner_product | cosine
-                          "threshold": 0.5 } } }
-```
-
-Requires the `pgvector` extension enabled in the database.
-
-## Docker
-
-```bash
-docker build -t tai42-postgres-mcp .
-docker run --rm -e PG_HOST=... -e PG_DB=... -e PG_USER=... -e PG_PASSWORD=... \
-  tai42-postgres-mcp tai42-postgres-mcp --readonly
-```
+Full reference — every connection and pooling variable, the CLI scoping flags,
+stdio and HTTP transport wiring, the generated-tool surface, `WhereFilter`
+filtering, and pgvector search — lives on the plugin's documentation page. See
+also [SECURITY.md](SECURITY.md) before deploying.
 
 ## Development
 
@@ -188,13 +81,12 @@ See [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ```bash
 uv venv --python 3.13
-uv pip install --no-sources --group docs --editable ".[dev,test-integration]"
+uv pip install --no-sources --editable ".[dev,test-integration]"
 uv run --no-sync ruff check .
 uv run --no-sync ruff format --check .
 uv run --no-sync pyright
 uv run --no-sync pytest --cov --cov-report=term-missing                 # unit tests
 uv run --no-sync pytest -m integration  # CRUD tests against real Postgres (needs Docker)
-uv run --no-sync mkdocs build --strict  # the docs site
 ```
 
 ## License

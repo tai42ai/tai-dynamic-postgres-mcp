@@ -1,0 +1,127 @@
+---
+title: Dynamic Postgres MCP server
+description: Configure and run the PostgreSQL MCP server — the PG_ and TOOLS_DIR settings, the CLI scoping flags, transport selection, and the generated CRUD tools.
+---
+
+Point the server at a PostgreSQL database and it introspects the schema and
+generates one typed MCP tool per DML operation per table. What the agent can reach
+is set two ways that must agree: the CLI flags below decide which tools exist, and
+the PostgreSQL role you connect as decides what those tools can physically do.
+Connect as a dedicated least-privilege role, never a superuser.
+
+## Connection settings
+
+Connection and pooling come from environment variables. `PG_DB`, `PG_USER`, and
+`PG_PASSWORD` have no default — a missing one fails at startup rather than
+connecting with a phantom value.
+
+| Variable | Default | Effect |
+| --- | --- | --- |
+| `PG_HOST` | `localhost` | PostgreSQL host. |
+| `PG_PORT` | `5432` | PostgreSQL port. |
+| `PG_DB` | required | Database name. |
+| `PG_USER` | required | Database user; use a least-privilege role. |
+| `PG_PASSWORD` | required | Database password. Held as a secret. |
+| `PG_STATEMENT_TIMEOUT` | `30000` | Per-connection `statement_timeout` in ms (`0` disables), capping a runaway query. |
+| `PG_POOL_MIN_SIZE` | `1` | Minimum pooled connections. |
+| `PG_POOL_MAX_SIZE` | `10` | Maximum pooled connections. |
+| `PG_POOL_TIMEOUT` | `10` | Pool acquire timeout (seconds). |
+| `PG_POOL_MAX_LIFETIME` | `300` | Maximum connection lifetime (seconds). |
+| `TOOLS_DIR` | `~/.cache/tai42-dynamic-postgres-mcp/tools` | Where generated tool files are written. |
+
+## Scoping flags
+
+The flags decide which tools are generated and how permissive they are.
+
+| Flag | Default | Effect |
+| --- | --- | --- |
+| `--overwrite / --no-overwrite` | on | Regenerate tool files on startup so they track the schema; `--no-overwrite` reuses existing files. |
+| `--readonly` | off | Generate only `select`/`select_joined` tools — no insert, update, or delete. |
+| `--allow-unfiltered` | off | Allow `update`/`delete` to run without a `WHERE` filter (affects every row). Off means unfiltered writes raise. |
+| `--select-joined a,b,c` | — | Generate a joined select over the given tables (repeatable). |
+| `--ignore-insert-column` | `id` | Column to exclude from insert inputs (repeatable). |
+| `--ignore-update-column` | `id` | Column to exclude from update inputs (repeatable). |
+| `--ignore-select-column` | — | Column to exclude from select output models (repeatable). |
+| `--ignore-select-joined-column` | — | Column to exclude from joined select models (repeatable). |
+| `-t, --transport` | `stdio` | `stdio`, `http`, `sse`, or `streamable-http`. |
+| `--host` | `127.0.0.1` | Bind host (HTTP/SSE transports only). |
+| `--port` | `8000` | Bind port (HTTP/SSE transports only). |
+
+## Transport
+
+The default transport is `stdio`: an MCP client launches the server as a
+subprocess and speaks over stdin/stdout. Wire it into a client's server list,
+passing the connection settings through `env`:
+
+```json
+{
+  "mcpServers": {
+    "postgres": {
+      "command": "uvx",
+      "args": ["--from", "tai42-dynamic-postgres-mcp", "tai42-postgres-mcp", "--readonly"],
+      "env": { "PG_DB": "dbname", "PG_USER": "agent", "PG_PASSWORD": "secret" }
+    }
+  }
+}
+```
+
+For a network-mounted server, choose an HTTP transport and bind a host and port
+(`--host` / `--port` apply only here):
+
+```bash
+uvx --from tai42-dynamic-postgres-mcp tai42-postgres-mcp -t http --host 0.0.0.0 --port 8000
+```
+
+## Generated tools
+
+For a table `public.orders` you get (unless `--readonly`):
+
+- `select_public_orders(where, order_by, limit, offset)`
+- `insert_public_orders(params, raise_on_conflict)`
+- `update_public_orders(data, where)`
+- `delete_public_orders(where)`
+
+Column types map to native Python: temporal columns to `datetime`/`date`/`time`,
+`uuid` to `uuid.UUID`, `numeric`/`decimal` to `Decimal`, `json`/`jsonb` to `Any`,
+and array columns to `list[...]`. `insert` returns the table's real primary key (a
+scalar list for a single-column key, a list of lists for a composite key, or the
+affected row count when the table has none); columns with a database default are
+omittable. `order_by` items take an optional `nulls` (`FIRST`/`LAST`).
+
+### Filtering — `WhereFilter`
+
+`select`, `update`, and `delete` accept a `where` argument. Field names must be
+real columns of the table; unknown fields are rejected, and values are always
+bound parameters, so there is no path for SQL injection through field names.
+
+```jsonc
+// Simple field filters (implicitly ANDed)
+{ "status": { "eq": "open" }, "total": { "gte": 100 } }
+
+// Logical composition
+{ "AND": [ { "status": { "eq": "open" } },
+           { "OR": [ { "total": { "gt": 1000 } }, { "vip": { "eq": true } } ] } ] }
+```
+
+Operators: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `like`, `not_like`, `ilike`,
+`not_ilike`, `in`, `not_in`, `between`, `is_null`, and `knn` (pgvector). Logical
+keys: `AND`, `OR`, `NOT`.
+
+### Vector search (pgvector)
+
+When a column is a `vector`, filter or order by similarity. Requires the
+`pgvector` extension enabled in the database.
+
+```jsonc
+{ "embedding": { "knn": { "query": [0.1, 0.2, 0.3],
+                          "distance": "cosine",   // l2 | inner_product | cosine
+                          "threshold": 0.5 } } }
+```
+
+## Docker
+
+```bash
+docker build -t tai42-postgres-mcp .
+docker run --rm -e PG_HOST=... -e PG_DB=... -e PG_USER=... -e PG_PASSWORD=... \
+  tai42-postgres-mcp tai42-postgres-mcp --readonly
+```

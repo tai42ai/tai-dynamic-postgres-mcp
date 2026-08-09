@@ -34,7 +34,8 @@ as quoted `psycopg.sql.Identifier` values; values are always bound parameters.
 - `gen/filters/`, `gen/order/` — the `WhereFilter` and ordering models plus their
   allowlist-checked SQL builders.
 - `gen/vector.py`, `gen/loader.py` — pgvector search support and tool loading.
-- `docs/` — the mkdocs site sources.
+- `src/tai42_dynamic_postgres_mcp/docs/` — the in-package plugin docs shipped in
+  the wheel.
 - `tests/` — unit tests plus the `integration`-marked CRUD suite.
 
 ## Naming
@@ -64,13 +65,12 @@ All of these must pass before a PR is merged; CI runs them on every push.
 
 ```bash
 uv venv --python 3.13
-uv pip install --no-sources --group docs --editable ".[dev,test-integration]"
+uv pip install --no-sources --editable ".[dev,test-integration]"
 uv run --no-sync ruff check .
 uv run --no-sync ruff format --check .
 uv run --no-sync pyright
 uv run --no-sync pytest --cov --cov-report=term-missing                 # unit tests
 uv run --no-sync pytest -m integration  # CRUD tests against real Postgres (needs Docker)
-uv run --no-sync mkdocs build --strict  # the docs site
 ```
 
 Before any commit, run a secret scan over `src/` and `tests/` (e.g.
