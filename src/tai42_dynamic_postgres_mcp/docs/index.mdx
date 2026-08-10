@@ -74,12 +74,12 @@ uvx --from tai42-dynamic-postgres-mcp tai42-postgres-mcp -t http --host 0.0.0.0 
 
 ## Generated tools
 
-For a table `public.orders` you get (unless `--readonly`):
+For a table `public.events` you get (unless `--readonly`):
 
-- `select_public_orders(where, order_by, limit, offset)`
-- `insert_public_orders(params, raise_on_conflict)`
-- `update_public_orders(data, where)`
-- `delete_public_orders(where)`
+- `select_public_events(where, order_by, limit, offset)`
+- `insert_public_events(params, raise_on_conflict)`
+- `update_public_events(data, where)`
+- `delete_public_events(where)`
 
 Column types map to native Python: temporal columns to `datetime`/`date`/`time`,
 `uuid` to `uuid.UUID`, `numeric`/`decimal` to `Decimal`, `json`/`jsonb` to `Any`,
@@ -100,7 +100,7 @@ bound parameters, so there is no path for SQL injection through field names.
 
 // Logical composition
 { "AND": [ { "status": { "eq": "open" } },
-           { "OR": [ { "total": { "gt": 1000 } }, { "vip": { "eq": true } } ] } ] }
+           { "OR": [ { "total": { "gt": 1000 } }, { "starred": { "eq": true } } ] } ] }
 ```
 
 Operators: `eq`, `ne`, `gt`, `gte`, `lt`, `lte`, `like`, `not_like`, `ilike`,

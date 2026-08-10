@@ -49,7 +49,7 @@ GRANT USAGE ON SCHEMA app TO agent;
 GRANT SELECT ON ALL TABLES IN SCHEMA app TO agent;
 
 -- Read/write example: add only the verbs you want
-GRANT INSERT, UPDATE, DELETE ON app.orders TO agent;
+GRANT INSERT, UPDATE, DELETE ON app.events TO agent;
 ```
 
 Restrict the visible surface further with `search_path` and by exposing only the

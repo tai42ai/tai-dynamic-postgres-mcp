@@ -39,7 +39,7 @@ dev = [
     "pyright>=1.1.390",
     # The spec test validates the authored tai-plugin.yml (kind: mcp-server,
     # contract-less) against PluginSpec and scans mcp.env markers with kit. The
-    # >=1.5/>=1.4 floors are the M34-minted minors carrying the mcp-server kind and
+    # >=1.5/>=1.4 floors are the minors carrying the mcp-server kind and
     # the marker-scan module; `<2` accepts every sibling minor. Installed via
     # `uv sync --extra dev` in CI.
     "tai42-contract>=1.5,<2",
