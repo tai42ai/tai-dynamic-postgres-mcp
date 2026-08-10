@@ -1,0 +1,23 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "python",
+  "include-component-in-tag": false,
+  "packages": {
+    ".": {
+      "skip-changelog": true,
+      "package-name": "tai42-dynamic-postgres-mcp",
+      "extra-files": [
+        {
+          "type": "yaml",
+          "path": "tai-plugin.yml",
+          "jsonpath": "$.version"
+        },
+        {
+          "type": "yaml",
+          "path": "src/tai42_dynamic_postgres_mcp/tai-plugin.yml",
+          "jsonpath": "$.version"
+        }
+      ]
+    }
+  }
+}
