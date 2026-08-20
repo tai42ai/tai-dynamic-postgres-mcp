@@ -1,8 +1,8 @@
 import pytest
 
-from tai42_dynamic_postgres_mcp.gen.filters.builder import resolver_from_columns
-from tai42_dynamic_postgres_mcp.gen.order.builder import build_order_by_clause
-from tai42_dynamic_postgres_mcp.gen.order.models import OrderByItem
+from tai42_mcp_dynamic_postgres.gen.filters.builder import resolver_from_columns
+from tai42_mcp_dynamic_postgres.gen.order.builder import build_order_by_clause
+from tai42_mcp_dynamic_postgres.gen.order.models import OrderByItem
 
 
 @pytest.fixture

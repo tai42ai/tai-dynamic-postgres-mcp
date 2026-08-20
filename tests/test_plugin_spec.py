@@ -15,7 +15,7 @@ from tai42_kit.utils.data.env_markers import scan_env_marker_refs
 
 _REPO_ROOT = Path(__file__).resolve().parent.parent
 _ROOT_SPEC = _REPO_ROOT / "tai-plugin.yml"
-_PACKAGED_SPEC = _REPO_ROOT / "src" / "tai42_dynamic_postgres_mcp" / "tai-plugin.yml"
+_PACKAGED_SPEC = _REPO_ROOT / "src" / "tai42_mcp_dynamic_postgres" / "tai-plugin.yml"
 
 # Per-deployment values that must be supplied (bare `${VAR}` markers) vs. those
 # that carry the server's own defaults.
@@ -33,7 +33,7 @@ def _pyproject() -> dict:
 
 def test_spec_is_a_contract_less_mcp_server() -> None:
     spec = _spec()
-    assert spec.ref == "tai42/dynamic-postgres-mcp"
+    assert spec.ref == "tai42/mcp-dynamic-postgres"
     # An mcp-server package imports no tai42-contract, so it declares no range.
     assert spec.contract is None
     kinds = [item.kind for item in spec.provides]
@@ -50,7 +50,7 @@ def test_mcp_transport_launches_the_console_script() -> None:
     mcp = _spec().provides[0].mcp
     assert mcp is not None
     assert mcp.command == "uvx"
-    assert mcp.args == ["--from", "tai42-dynamic-postgres-mcp", "tai42-postgres-mcp"]
+    assert mcp.args == ["tai42-mcp-dynamic-postgres"]
 
 
 def test_every_mcp_env_value_is_an_env_marker() -> None:
@@ -81,7 +81,7 @@ def test_packaged_copy_is_identical_to_the_root_spec() -> None:
 
 
 def test_docs_and_spec_are_declared_in_package_data() -> None:
-    package_data = _pyproject()["tool"]["setuptools"]["package-data"]["tai42_dynamic_postgres_mcp"]
+    package_data = _pyproject()["tool"]["setuptools"]["package-data"]["tai42_mcp_dynamic_postgres"]
     for pattern in ("tai-plugin.yml", "docs/*"):
         assert pattern in package_data, f"{pattern!r} must be shipped via package-data; got {package_data!r}"
 

@@ -2,7 +2,7 @@
 
 from typing import Dict, Iterable, Sequence
 
-from tai42_dynamic_postgres_mcp.gen.schema.introspect import ColumnInfo, TableInfo
+from tai42_mcp_dynamic_postgres.gen.schema.introspect import ColumnInfo, TableInfo
 
 
 def col(

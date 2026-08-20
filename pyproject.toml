@@ -3,7 +3,7 @@ requires = ["setuptools>=77.0.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "tai42-dynamic-postgres-mcp"
+name = "tai42-mcp-dynamic-postgres"
 version = "0.4.0"
 description = "Schema-driven generator for safe, scoped PostgreSQL DML tools in FastMCP agent systems"
 authors = [{ name = "tai42", email = "oss@tai42.ai" }]
@@ -51,12 +51,12 @@ test-integration = [
 
 [project.urls]
 Homepage = "https://tai42.ai"
-Repository = "https://github.com/tai42ai/tai-dynamic-postgres-mcp"
-Issues = "https://github.com/tai42ai/tai-dynamic-postgres-mcp/issues"
-Changelog = "https://github.com/tai42ai/tai-dynamic-postgres-mcp/blob/main/CHANGELOG.md"
+Repository = "https://github.com/tai42ai/tai42-mcp-dynamic-postgres"
+Issues = "https://github.com/tai42ai/tai42-mcp-dynamic-postgres/issues"
+Changelog = "https://github.com/tai42ai/tai42-mcp-dynamic-postgres/blob/main/CHANGELOG.md"
 
 [project.entry-points.console_scripts]
-tai42-postgres-mcp = "tai42_dynamic_postgres_mcp.cli.main:main"
+tai42-mcp-dynamic-postgres = "tai42_mcp_dynamic_postgres.cli.main:main"
 
 [tool.setuptools]
 package-dir = { "" = "src" }
@@ -64,7 +64,7 @@ package-dir = { "" = "src" }
 [tool.setuptools.package-data]
 # The in-package docs tree ships in the wheel (the marketplace extracts docs from
 # it) alongside the typing marker and the authored plugin spec.
-tai42_dynamic_postgres_mcp = ["py.typed", "tai-plugin.yml", "docs/*", "docs/images/*"]
+tai42_mcp_dynamic_postgres = ["py.typed", "tai-plugin.yml", "docs/*", "docs/images/*"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
@@ -79,7 +79,7 @@ markers = [
 ]
 
 [tool.coverage.run]
-source = ["tai42_dynamic_postgres_mcp"]
+source = ["tai42_mcp_dynamic_postgres"]
 
 [tool.coverage.report]
 fail_under = 97
@@ -98,8 +98,8 @@ select = ["E", "W", "F", "I", "B", "C4", "SIM", "PIE", "PT", "RUF", "TID"]
 [tool.ruff.lint.per-file-ignores]
 # These modules embed generated-tool source as string templates; their tool
 # docstrings are intentionally long single lines and must not be reflowed.
-"src/tai42_dynamic_postgres_mcp/gen/builders/select_gen.py" = ["E501"]
-"src/tai42_dynamic_postgres_mcp/gen/builders/select_joined_gen.py" = ["E501"]
+"src/tai42_mcp_dynamic_postgres/gen/builders/select_gen.py" = ["E501"]
+"src/tai42_mcp_dynamic_postgres/gen/builders/select_joined_gen.py" = ["E501"]
 
 [tool.pyright]
 include = ["src"]

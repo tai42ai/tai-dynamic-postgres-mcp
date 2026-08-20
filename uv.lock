@@ -1355,7 +1355,30 @@ wheels = [
 ]
 
 [[package]]
-name = "tai42-dynamic-postgres-mcp"
+name = "tai42-kit"
+version = "1.4.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "anyio" },
+    { name = "fastmcp" },
+    { name = "httpcore" },
+    { name = "httpx" },
+    { name = "jsonschema" },
+    { name = "mcp" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "python-dotenv" },
+    { name = "pyyaml" },
+    { name = "ruamel-yaml" },
+    { name = "tai42-contract" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/11/b1/6993ed545773836e5a818f6820022cd663ccf202e03207bfb4c314ef19e5/tai42_kit-1.4.0.tar.gz", hash = "sha256:5ce3e7da58b20ff8899d7b44e2a708943982880bcb9f5b0245d8dcf3a34f29ff", size = 109747, upload-time = "2026-08-09T19:22:26.902Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/9b/6c/1b4d3e8784b55de539661d0a107b92f0f1d51b3a4475acad50afee6b005b/tai42_kit-1.4.0-py3-none-any.whl", hash = "sha256:cc97687a8d9de17c9953091e741215f5ab70cfe6d8e906951fc3c90eb1790efd", size = 130543, upload-time = "2026-08-09T19:22:25.697Z" },
+]
+
+[[package]]
+name = "tai42-mcp-dynamic-postgres"
 version = "0.4.0"
 source = { editable = "." }
 dependencies = [
@@ -1399,29 +1422,6 @@ requires-dist = [
     { name = "testcontainers", extras = ["postgres"], marker = "extra == 'test-integration'", specifier = ">=4.0" },
 ]
 provides-extras = ["dev", "test-integration"]
-
-[[package]]
-name = "tai42-kit"
-version = "1.4.0"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "anyio" },
-    { name = "fastmcp" },
-    { name = "httpcore" },
-    { name = "httpx" },
-    { name = "jsonschema" },
-    { name = "mcp" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "python-dotenv" },
-    { name = "pyyaml" },
-    { name = "ruamel-yaml" },
-    { name = "tai42-contract" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/11/b1/6993ed545773836e5a818f6820022cd663ccf202e03207bfb4c314ef19e5/tai42_kit-1.4.0.tar.gz", hash = "sha256:5ce3e7da58b20ff8899d7b44e2a708943982880bcb9f5b0245d8dcf3a34f29ff", size = 109747, upload-time = "2026-08-09T19:22:26.902Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9b/6c/1b4d3e8784b55de539661d0a107b92f0f1d51b3a4475acad50afee6b005b/tai42_kit-1.4.0-py3-none-any.whl", hash = "sha256:cc97687a8d9de17c9953091e741215f5ab70cfe6d8e906951fc3c90eb1790efd", size = 130543, upload-time = "2026-08-09T19:22:25.697Z" },
-]
 
 [[package]]
 name = "testcontainers"

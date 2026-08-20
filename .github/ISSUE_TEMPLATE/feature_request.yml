@@ -1,5 +1,5 @@
 name: Feature request
-description: Propose an addition or change to tai42-dynamic-postgres-mcp
+description: Propose an addition or change to tai42-mcp-dynamic-postgres
 labels: ["enhancement"]
 body:
   - type: textarea
@@ -12,7 +12,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: tai42-dynamic-postgres-mcp version
+      label: tai42-mcp-dynamic-postgres version
       description: The version you are using, if relevant.
       placeholder: "0.1.1"
     validations:

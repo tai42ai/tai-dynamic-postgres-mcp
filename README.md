@@ -1,6 +1,6 @@
-# tai42-dynamic-postgres-mcp
+# tai42-mcp-dynamic-postgres
 
-[![CI](https://github.com/tai42ai/tai-dynamic-postgres-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/tai42ai/tai-dynamic-postgres-mcp/actions/workflows/ci.yml)
+[![CI](https://github.com/tai42ai/tai42-mcp-dynamic-postgres/actions/workflows/ci.yml/badge.svg)](https://github.com/tai42ai/tai42-mcp-dynamic-postgres/actions/workflows/ci.yml)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 Schema-driven generator for **safe, scoped PostgreSQL DML tools** in
@@ -54,18 +54,18 @@ Requires **Python 3.13+**. Install from PyPI into the environment that runs the
 server, or run it without installing:
 
 ```bash
-uv add tai42-dynamic-postgres-mcp
-uvx --from tai42-dynamic-postgres-mcp tai42-postgres-mcp   # run it without installing
+uv add tai42-mcp-dynamic-postgres
+uvx tai42-mcp-dynamic-postgres   # run it without installing
 ```
 
 Or from source — clone this repo and add it as an editable dependency, or run
 the clone with `uvx`:
 
 ```bash
-git clone https://github.com/tai42ai/tai-dynamic-postgres-mcp   # next to your app checkout
+git clone https://github.com/tai42ai/tai42-mcp-dynamic-postgres   # next to your app checkout
 cd /path/to/your/app
-uv add --editable ../tai-dynamic-postgres-mcp
-uvx --from ../tai-dynamic-postgres-mcp tai42-postgres-mcp
+uv add --editable ../tai42-mcp-dynamic-postgres
+uvx --from ../tai42-mcp-dynamic-postgres tai42-mcp-dynamic-postgres
 ```
 
 ## Documentation

@@ -1,6 +1,6 @@
-# Contributing to tai42-dynamic-postgres-mcp
+# Contributing to tai42-mcp-dynamic-postgres
 
-`tai42-dynamic-postgres-mcp` generates **safe, scoped PostgreSQL DML tools** for
+`tai42-mcp-dynamic-postgres` generates **safe, scoped PostgreSQL DML tools** for
 FastMCP agent systems: it introspects a database schema and emits one typed MCP
 tool per DML operation per table. The rule that shapes everything: **the agent
 never sees raw SQL.** Identifiers come from a validated allowlist and are emitted
@@ -34,7 +34,7 @@ as quoted `psycopg.sql.Identifier` values; values are always bound parameters.
 - `gen/filters/`, `gen/order/` — the `WhereFilter` and ordering models plus their
   allowlist-checked SQL builders.
 - `gen/vector.py`, `gen/loader.py` — pgvector search support and tool loading.
-- `src/tai42_dynamic_postgres_mcp/docs/` — the in-package plugin docs shipped in
+- `src/tai42_mcp_dynamic_postgres/docs/` — the in-package plugin docs shipped in
   the wheel.
 - `tests/` — unit tests plus the `integration`-marked CRUD suite.
 

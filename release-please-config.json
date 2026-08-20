@@ -5,7 +5,7 @@
   "packages": {
     ".": {
       "skip-changelog": true,
-      "package-name": "tai42-dynamic-postgres-mcp",
+      "package-name": "tai42-mcp-dynamic-postgres",
       "extra-files": [
         {
           "type": "yaml",
@@ -14,7 +14,7 @@
         },
         {
           "type": "yaml",
-          "path": "src/tai42_dynamic_postgres_mcp/tai-plugin.yml",
+          "path": "src/tai42_mcp_dynamic_postgres/tai-plugin.yml",
           "jsonpath": "$.version"
         }
       ]

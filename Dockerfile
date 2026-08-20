@@ -19,4 +19,4 @@ RUN adduser --system --no-create-home app
 USER app
 
 # Default command (can be overridden)
-CMD ["tai42-postgres-mcp"]
+CMD ["tai42-mcp-dynamic-postgres"]

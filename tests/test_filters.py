@@ -1,12 +1,12 @@
 import pytest
 from pydantic import ValidationError
 
-from tai42_dynamic_postgres_mcp.gen.filters.builder import (
+from tai42_mcp_dynamic_postgres.gen.filters.builder import (
     build_where_clause,
     resolver_from_column_map,
     resolver_from_columns,
 )
-from tai42_dynamic_postgres_mcp.gen.filters.models import LogicalFilter, WhereFilter
+from tai42_mcp_dynamic_postgres.gen.filters.models import LogicalFilter, WhereFilter
 
 
 def render(where_filter, resolver):
